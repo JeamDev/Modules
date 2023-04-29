@@ -3,14 +3,13 @@
 # meta developer: @jeamoff
 # scope: hikka_only
 # scope: hikka_min 1.2.10
-# requires: urllib requests carbon-api
+# requires: urllib pillow
 
 import io
 
-import requests
 from telethon.tl.types import Message
 
-from carbon import Carbon
+from PIL import Image, ImageDraw, ImageFont
 
 from .. import loader, utils
 
@@ -85,7 +84,6 @@ class TextToCode(loader.Module):
         "_cmd_doc_carbon": "<kod> - Güzel kod resmi oluşturur",
     }
 
-    client_carbon = Carbon()
 
     async def texttocodecmd(self, message: Message):
         """<code> - Create beautiful code image"""
@@ -97,6 +95,22 @@ class TextToCode(loader.Module):
 
         message = await utils.answer(message, self.strings("loading"))
 
+        width = 800
+        height = 600
+        img = Image.new('RGB', (width, height), color='white')
+        draw = ImageDraw.Draw(img)
+        font = ImageFont.truetype('arial.ttf', size=16)
+        lines = args.split('\n')
+
+        y = 0
+        for line in lines:
+            draw.text((10, y), line, font=font, fill='black')
+            y += font.getsize(line)[1] + 5
+
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+
+
         # doc = io.BytesIO(
         #     (
         #         await self.client_carbon.create(args)
@@ -106,8 +120,9 @@ class TextToCode(loader.Module):
 
         await self._client.send_message(
             utils.get_chat_id(message),
-            file=await self.client_carbon.create(args),
+            file=bufer,
             force_document=(len(args.splitlines()) > 50),
             reply_to=getattr(message, "reply_to_msg_id", None),
         )
         await message.delete()
+        buffer.close()
