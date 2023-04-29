@@ -85,7 +85,7 @@ class TextToCode(loader.Module):
         "_cmd_doc_carbon": "<kod> - Güzel kod resmi oluşturur",
     }
 
-    client = Carbon()
+    client_carbon = Carbon()
 
     async def texttocodecmd(self, message: Message):
         """<code> - Create beautiful code image"""
@@ -99,7 +99,7 @@ class TextToCode(loader.Module):
 
         doc = io.BytesIO(
             (
-                await self.client.create(args)
+                await self.client_carbon.create(args)
             ).content
         )
         doc.name = "coded.jpg"
