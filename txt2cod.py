@@ -97,16 +97,16 @@ class TextToCode(loader.Module):
 
         message = await utils.answer(message, self.strings("loading"))
 
-        doc = io.BytesIO(
-            (
-                await self.client_carbon.create(args)
-            ).content
-        )
-        doc.name = "coded.jpg"
+        # doc = io.BytesIO(
+        #     (
+        #         await self.client_carbon.create(args)
+        #     ).content
+        # )
+        # doc.name = "coded.jpg"
 
         await self._client.send_message(
             utils.get_chat_id(message),
-            file=doc,
+            file=await self.client_carbon.create(args),
             force_document=(len(args.splitlines()) > 50),
             reply_to=getattr(message, "reply_to_msg_id", None),
         )
